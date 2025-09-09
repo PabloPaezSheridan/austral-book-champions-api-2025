@@ -46,7 +46,7 @@ stages:
 
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: '<Nombre de tu servicio de conexión>'
+              azureSubscription: 'proyecto_tup_2025_service_connection'
               appType: 'webApp'
               appName: 'api-proyecto-tup-2025'
               package: '$(Pipeline.Workspace)/drop'
