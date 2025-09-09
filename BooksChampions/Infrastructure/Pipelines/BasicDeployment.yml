@@ -1,62 +1,53 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - api-proyecto-tup-2025
 
-on:
-  push:
-    branches:
+trigger:
+  branches:
+    include:
       - main
-  workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: windows-latest
-    permissions:
-      contents: read #This is required for actions/checkout
+pool:
+  vmImage: 'windows-latest'
 
+variables:
+  buildConfiguration: 'Release'
+  outputPath: '$(Build.ArtifactStagingDirectory)/myapp'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
     steps:
-      - uses: actions/checkout@v4
+    - checkout: self
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --project ../Web/Web.csproj --configuration Release
+    - script: dotnet build Web/Web.csproj --configuration $(buildConfiguration)
+      displayName: 'Build with dotnet'
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+    - script: dotnet publish Web/Web.csproj --configuration $(buildConfiguration) --output $(outputPath)
+      displayName: 'Publish with dotnet'
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+    - publish: $(outputPath)
+      artifact: drop
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployWeb
+    environment: 'Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9B466CDC6C114DF196C30EF899DF070A }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F2684676D04B42358C28EB53E0F60AA9 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_961FB76CFD6E404EA7EF0319FD2BE5A0 }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'api-proyecto-tup-2025'
-          slot-name: 'Production'
-          package: .
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '<Nombre de tu servicio de conexión>'
+              appType: 'webApp'
+              appName: 'api-proyecto-tup-2025'
+              package: '$(Pipeline.Workspace)/drop'
           
