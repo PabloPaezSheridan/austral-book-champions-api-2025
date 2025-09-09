@@ -5,8 +5,8 @@ trigger:
       - main
 
 pool:
-  name: Default
-  demands: 
+  name: Azure Pipelines
+  demands:
     - agent.name -equals 'Hosted Agent'
 
 variables:
