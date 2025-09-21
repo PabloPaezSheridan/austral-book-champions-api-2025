@@ -23,13 +23,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore Web/Web.csproj
+        run: dotnet restore BooksChampions/Web/Web.csproj
 
       - name: Build application
-        run: dotnet build Web/Web.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
+        run: dotnet build BooksChampions/Web/Web.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore
 
       - name: Publish application
-        run: dotnet publish Web/Web.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --output ./publish --no-build
+        run: dotnet publish BooksChampions/Web/Web.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --output ./publish --no-build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
