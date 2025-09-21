@@ -1,4 +1,3 @@
-
 trigger:
   branches:
     include:
@@ -8,48 +7,48 @@ pool:
   name: Azure Pipelines
   demands:
     - agent.name -equals 'Hosted Agent'
+    - gtVersion 4.261.0
 
 variables:
-  buildConfiguration: 'Release'
-  outputPath: '$(Build.ArtifactStagingDirectory)/myapp'
+  buildConfiguration: "Release"
+  outputPath: "$(Build.ArtifactStagingDirectory)/myapp"
 
 stages:
-- stage: Build
-  jobs:
-  - job: Build
-    steps:
-    - checkout: self
+  - stage: Build
+    jobs:
+      - job: Build
+        steps:
+          - checkout: self
 
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '8.x'
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "8.x"
 
-    - script: dotnet build Web/Web.csproj --configuration $(buildConfiguration)
-      displayName: 'Build with dotnet'
+          - script: dotnet build Web/Web.csproj --configuration $(buildConfiguration)
+            displayName: "Build with dotnet"
 
-    - script: dotnet publish Web/Web.csproj --configuration $(buildConfiguration) --output $(outputPath)
-      displayName: 'Publish with dotnet'
+          - script: dotnet publish Web/Web.csproj --configuration $(buildConfiguration) --output $(outputPath)
+            displayName: "Publish with dotnet"
 
-    - publish: $(outputPath)
-      artifact: drop
-
-- stage: Deploy
-  dependsOn: Build
-  jobs:
-  - deployment: DeployWeb
-    environment: 'Production'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
+          - publish: $(outputPath)
             artifact: drop
 
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: 'proyecto_tup_2025_service_connection'
-              appType: 'webApp'
-              appName: 'api-proyecto-tup-2025'
-              package: '$(Pipeline.Workspace)/drop'
-          
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - deployment: DeployWeb
+        environment: "Production"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: "proyecto_tup_2025_service_connection"
+                    appType: "webApp"
+                    appName: "api-proyecto-tup-2025"
+                    package: "$(Pipeline.Workspace)/drop"
