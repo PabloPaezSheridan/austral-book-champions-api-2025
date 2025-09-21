@@ -38,20 +38,29 @@ jobs:
           path: ./publish
 
   deploy:
+    runs-on: windows-latest
     needs: build
-    runs-on: ubuntu-latest
-    environment: Production
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Download artifact
+      - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: webapp
-          path: ./webapp
+          name: webApp
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9B466CDC6C114DF196C30EF899DF070A }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F2684676D04B42358C28EB53E0F60AA9 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_961FB76CFD6E404EA7EF0319FD2BE5A0 }}
 
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
         with:
           app-name: "api-proyecto-tup-2025"
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: "./webapp"
+          slot-name: "Production"
+          package: .
