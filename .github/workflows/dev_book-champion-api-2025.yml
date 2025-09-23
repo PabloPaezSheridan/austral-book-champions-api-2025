@@ -30,7 +30,7 @@ jobs:
         run: dotnet build BooksChampions/BooksChampions.sln --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish BooksChampions/Web/Web.csproj -c Release -o ./myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
