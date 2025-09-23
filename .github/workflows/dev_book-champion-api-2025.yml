@@ -24,17 +24,10 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Restore dependencies
-<<<<<<< HEAD
         run: dotnet restore BooksChampions/BooksChampions.sln
 
       - name: Build with dotnet
         run: dotnet build BooksChampions/BooksChampions.sln --configuration Release
-=======
-        run: dotnet restore BookChampions.sln
-
-      - name: Build with dotnet
-        run: dotnet build BookChampions.sln --configuration Release
->>>>>>> 32077a0 (update pipeline build path)
 
       - name: dotnet publish
         run: dotnet publish BooksChampions/Web/Web.csproj -c Release -o ./myapp
@@ -64,14 +57,11 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2A26A561B3BE4FF79DCE3CD93B46798C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_27196C532F874450AFA40F1F73A02076 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_68E293AD0D774BC38FAF6283B8DDE623 }}
-<<<<<<< HEAD
       
       - name: Update database with EF Core migrations
         run: dotnet ef database update --project BooksChampions/Infrastructure/Infrastructure.csproj --startup-project BooksChampions/Web/Web.csproj
         env:
           ASPNETCORE_ENVIRONMENT: Development
-=======
->>>>>>> 32077a0 (update pipeline build path)
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
