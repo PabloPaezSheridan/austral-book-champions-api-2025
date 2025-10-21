@@ -57,6 +57,11 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2A26A561B3BE4FF79DCE3CD93B46798C }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_27196C532F874450AFA40F1F73A02076 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_68E293AD0D774BC38FAF6283B8DDE623 }}
+      
+      - name: Update database with EF Core migrations
+        run: dotnet ef database update --project BooksChampions/Infrastructure/Infrastructure.csproj --startup-project BooksChampions/Web/Web.csproj
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
