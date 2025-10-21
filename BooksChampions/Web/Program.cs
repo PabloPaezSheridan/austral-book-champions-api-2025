@@ -44,13 +44,6 @@ builder.Services.AddSwaggerGen(setupAction =>
 
 });
 
-string connectionString = builder.Configuration["ConnectionStrings:BooksDBConnectionString"]!;
-
-// Configure the SQLite connection
-var connection = new SqliteConnection(connectionString);
-connection.Open();
-
-
 builder.Services.AddAuthentication("Bearer") 
     .AddJwtBearer(options => 
     {
@@ -66,7 +59,7 @@ builder.Services.AddAuthentication("Bearer")
     }
 );
 
-builder.Services.AddDbContext<BookDbContext>(dbContextOptions => dbContextOptions.UseSqlite(connection));
+builder.Services.AddDbContext<BookDbContext>(dbContextOptions => dbContextOptions.UseSqlServer(builder.Configuration["ConnectionStrings:BooksDBConnectionString"]));
 
 #region Repositories
 
