@@ -58,6 +58,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8B70A61C84444C369FDB2E378E202DDA }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E6607CD26A974AF986FFBDDC2242A372 }}
           
+      - name: Install dotnet-ef tool
+        run: dotnet tool install --global dotnet-ef --version 8.*
+          
       - name: Update database with EF Core migrations
         run: dotnet ef database update --project BooksChampions/Infrastructure/Infrastructure.csproj --startup-project BooksChampions/Web/Web.csproj
         env:
